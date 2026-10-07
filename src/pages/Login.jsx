@@ -175,7 +175,15 @@ export default function Login() {
       await login(loginIdentifier, loginPassword)
       navigate('/')
     } catch (err) {
-      setError(err.response?.data?.error || 'Mã số sinh viên/tài khoản hoặc mật khẩu không chính xác')
+      if (err.response?.data?.error) {
+        setError(err.response.data.error)
+      } else if (err.response?.status === 404 || err.response?.status === 405) {
+        setError('Không tìm thấy máy chủ Backend (Lỗi HTTP ' + err.response.status + '). Khi deploy trên Vercel, bạn cần có Backend trực tuyến và cấu hình biến môi trường VITE_API_URL.')
+      } else if (!err.response) {
+        setError('Không thể kết nối đến máy chủ Backend. Vui lòng kiểm tra kết nối mạng hoặc biến môi trường VITE_API_URL.')
+      } else {
+        setError('Mã số sinh viên/tài khoản hoặc mật khẩu không chính xác')
+      }
     } finally {
       setLoading(false)
     }
@@ -218,7 +226,15 @@ export default function Login() {
         navigate('/')
       }, 1000)
     } catch (err) {
-      setError(err.response?.data?.error || 'Có lỗi xảy ra khi tạo tài khoản')
+      if (err.response?.data?.error) {
+        setError(err.response.data.error)
+      } else if (err.response?.status === 404 || err.response?.status === 405) {
+        setError('Không tìm thấy máy chủ Backend (Lỗi HTTP ' + err.response.status + '). Vui lòng kiểm tra lại cấu hình Backend API.')
+      } else if (!err.response) {
+        setError('Không thể kết nối đến máy chủ Backend. Vui lòng kiểm tra lại kết nối mạng.')
+      } else {
+        setError('Có lỗi xảy ra khi tạo tài khoản')
+      }
     } finally {
       setLoading(false)
     }
