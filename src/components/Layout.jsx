@@ -199,37 +199,38 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-paper-0)] text-[var(--color-ink-0)] selection:bg-[var(--color-accent)] selection:text-white transition-colors duration-200">
-      {/* ───────── N1b University Workbench Header ───────── */}
-      <header className="sticky top-0 z-40 bg-[var(--color-paper-0)]/95 backdrop-blur-md border-b border-[var(--rule-hair)] transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 gap-4">
+      {/* ───────── Floating Pill Navigation Bar ───────── */}
+      <header className="fixed top-2 sm:top-3.5 inset-x-0 z-40 px-3 sm:px-6 pointer-events-none transition-all duration-300">
+        <div className="max-w-6xl mx-auto">
+          {/* Main Floating Pill Capsule */}
+          <div className="pointer-events-auto h-14 sm:h-15 px-3 sm:px-4.5 rounded-full bg-[var(--color-paper-0)]/90 dark:bg-[var(--color-paper-0)]/85 backdrop-blur-xl border border-[var(--rule-soft)] shadow-lg shadow-black/5 dark:shadow-black/30 flex items-center justify-between gap-2 sm:gap-4 transition-all">
             
             {/* University & School Identity */}
-            <NavLink to="/" className="flex items-center gap-3 group shrink-0" title="Trang chủ QLPH SEEE - Đại Học Bách Khoa Hà Nội">
-              <div className="h-10 px-2 py-0.5 rounded-lg bg-white shadow-xs border border-[var(--rule-soft)] flex items-center justify-center overflow-hidden">
+            <NavLink to="/" className="flex items-center gap-2.5 group shrink-0" title="Trang chủ QLPH SEEE - Đại Học Bách Khoa Hà Nội">
+              <div className="w-9 h-9 sm:w-9.5 sm:h-9.5 rounded-full bg-white shadow-xs border border-[var(--rule-soft)] flex items-center justify-center overflow-hidden p-1 shrink-0 group-hover:scale-105 transition-transform">
                 <img 
                   src="/logo.png" 
-                  alt="SEEE - School of Electrical & Electronic Engineering" 
-                  className="h-full w-auto object-contain max-h-8" 
+                  alt="SEEE Logo" 
+                  className="h-full w-auto object-contain max-h-7" 
                 />
               </div>
               <div className="flex flex-col text-left">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-display font-bold text-base tracking-tight text-[var(--color-ink-0)] leading-none">
+                  <span className="font-display font-bold text-sm sm:text-base tracking-tight text-[var(--color-ink-0)] leading-none">
                     SEEE
                   </span>
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--color-accent)] px-1.5 py-0.2 rounded bg-[var(--color-accent-tint)] border border-[var(--rule-hair)]">
+                  <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-[var(--color-accent)] px-1.5 py-0.5 rounded-full bg-[var(--color-accent-tint)] border border-[var(--rule-hair)]">
                     QLPH
                   </span>
                 </div>
-                <span className="text-[10px] font-mono tracking-wider uppercase text-[var(--color-ink-2)] mt-0.5">
-                  Đại học Bách khoa Hà Nội · SINCE 1956
+                <span className="hidden sm:inline-block text-[9px] font-mono tracking-wider uppercase text-[var(--color-ink-2)] mt-0.5 leading-none">
+                  BÁCH KHOA · SINCE 1956
                 </span>
               </div>
             </NavLink>
 
-            {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-1 font-sans text-xs">
+            {/* Desktop Floating Pill Navigation Links */}
+            <nav className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-[var(--color-paper-1)]/70 dark:bg-[var(--color-paper-1)]/50 border border-[var(--rule-hair)] font-sans text-xs">
               {allNavItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
@@ -238,16 +239,18 @@ export default function Layout() {
                   <NavLink
                     key={item.path}
                     to={item.path}
-                    className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg font-medium transition-colors ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-medium transition-all duration-200 ${
                       isActive
-                        ? 'bg-[var(--color-paper-2)] text-[var(--color-accent)] font-semibold shadow-2xs'
-                        : 'text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] hover:bg-[var(--color-paper-1)]'
+                        ? 'bg-[var(--color-accent)] text-white font-semibold shadow-xs shadow-[rgba(180,20,30,0.25)]'
+                        : 'text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] hover:bg-[var(--color-paper-2)]/60'
                     }`}
                   >
-                    <Icon className="w-4 h-4 shrink-0" />
+                    <Icon className="w-3.5 h-3.5 shrink-0" />
                     <span>{item.name}</span>
                     {item.badge > 0 && (
-                      <span className="ml-1 px-1.5 py-0.2 rounded-full bg-rose-600 text-white text-[10px] font-mono font-bold leading-none">
+                      <span className={`ml-0.5 px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold leading-none ${
+                        isActive ? 'bg-white text-[var(--color-accent)]' : 'bg-rose-600 text-white'
+                      }`}>
                         {item.badge}
                       </span>
                     )}
@@ -257,24 +260,21 @@ export default function Layout() {
             </nav>
 
             {/* Right Tools: Clock, Theme, Notifications, Profile, Mobile Toggle */}
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               
-              {/* Real-time Clock */}
-              <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[var(--color-paper-1)] border border-[var(--rule-hair)] font-mono text-[11px] text-[var(--color-ink-1)] tabular-nums">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              {/* Real-time Clock Capsule */}
+              <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--color-paper-1)]/80 dark:bg-[var(--color-paper-1)]/50 border border-[var(--rule-hair)] font-mono text-[11px] text-[var(--color-ink-1)] tabular-nums">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span>
-                  {currentTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                </span>
-                <span className="text-[var(--color-ink-2)]">
-                  · {currentTime.toLocaleDateString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit' })}
+                  {currentTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
 
-              {/* Theme Toggle */}
+              {/* Theme Toggle Pill Button */}
               <button
                 type="button"
                 onClick={toggleTheme}
-                className="p-2 rounded-lg text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] hover:bg-[var(--color-paper-1)] border border-transparent hover:border-[var(--rule-hair)] transition-all cursor-pointer btn-tactile"
+                className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] bg-[var(--color-paper-1)]/60 hover:bg-[var(--color-paper-2)] border border-[var(--rule-hair)] transition-all cursor-pointer btn-tactile"
                 title={theme === 'dark' ? 'Chuyển sang giao diện Sáng' : 'Chuyển sang giao diện Tối'}
                 aria-label="Toggle dark/light mode"
               >
@@ -285,17 +285,17 @@ export default function Layout() {
                 )}
               </button>
 
-              {/* Notification Bell */}
+              {/* Notification Bell Pill Button */}
               <div className="relative" ref={notifRef}>
                 <button
                   onClick={() => setNotifDropdownOpen(!notifDropdownOpen)}
-                  className="relative p-2 rounded-lg text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] hover:bg-[var(--color-paper-1)] border border-transparent hover:border-[var(--rule-hair)] transition-all cursor-pointer btn-tactile"
+                  className="w-9 h-9 rounded-full relative flex items-center justify-center text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] bg-[var(--color-paper-1)]/60 hover:bg-[var(--color-paper-2)] border border-[var(--rule-hair)] transition-all cursor-pointer btn-tactile"
                   title="Thông báo hệ thống"
                   aria-label="Thông báo"
                 >
                   <Bell className="w-4 h-4" />
                   {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-[var(--color-accent)] text-white text-[9px] font-mono font-bold flex items-center justify-center ring-2 ring-[var(--color-paper-0)]">
+                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[var(--color-accent)] text-white text-[9px] font-mono font-bold flex items-center justify-center ring-2 ring-[var(--color-paper-0)]">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}
@@ -303,7 +303,7 @@ export default function Layout() {
 
                 {/* Notification Dropdown */}
                 {notifDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-[var(--color-paper-0)] border border-[var(--rule-soft)] rounded-xl shadow-xl overflow-hidden z-50 animate-fade-in">
+                  <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-[var(--color-paper-0)] border border-[var(--rule-soft)] rounded-2xl shadow-2xl overflow-hidden z-50 animate-fade-in">
                     <div className="p-3 bg-[var(--color-paper-1)] border-b border-[var(--rule-hair)] flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Bell className="w-4 h-4 text-[var(--color-accent)]" />
@@ -365,28 +365,28 @@ export default function Layout() {
                 )}
               </div>
 
-              {/* User Profile */}
+              {/* User Profile Pill */}
               <div className="relative" ref={profileRef}>
                 <button
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                  className="flex items-center gap-2 p-1 rounded-lg hover:bg-[var(--color-paper-1)] border border-transparent hover:border-[var(--rule-hair)] transition-all cursor-pointer btn-tactile"
+                  className="flex items-center gap-2 p-1 sm:pr-2.5 rounded-full hover:bg-[var(--color-paper-1)] border border-transparent hover:border-[var(--rule-hair)] transition-all cursor-pointer btn-tactile"
                   title="Tài khoản cá nhân"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-[var(--color-accent)] text-white font-bold flex items-center justify-center text-xs shadow-2xs">
+                  <div className="w-8 h-8 rounded-full bg-[var(--color-accent)] text-white font-bold flex items-center justify-center text-xs shadow-2xs">
                     {user?.full_name ? user.full_name.charAt(0).toUpperCase() : 'U'}
                   </div>
                   <div className="hidden sm:flex flex-col text-left">
-                    <span className="text-xs font-semibold text-[var(--color-ink-0)] leading-tight max-w-[100px] truncate">
+                    <span className="text-xs font-semibold text-[var(--color-ink-0)] leading-tight max-w-[90px] truncate">
                       {user?.full_name || 'Người dùng'}
                     </span>
-                    <span className="text-[10px] font-mono text-[var(--color-ink-2)] leading-none mt-0.5">
+                    <span className="text-[9px] font-mono text-[var(--color-ink-2)] leading-none mt-0.5">
                       {isAdmin ? 'Quản trị viên' : (user?.student_id || 'Sinh viên')}
                     </span>
                   </div>
                 </button>
 
                 {profileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-[var(--color-paper-0)] border border-[var(--rule-soft)] rounded-xl shadow-xl p-3 z-50 animate-fade-in">
+                  <div className="absolute right-0 mt-3 w-64 bg-[var(--color-paper-0)] border border-[var(--rule-soft)] rounded-2xl shadow-2xl p-3 z-50 animate-fade-in">
                     <div className="pb-3 border-b border-[var(--rule-hair)] mb-2 px-1">
                       <p className="text-xs font-bold text-[var(--color-ink-0)]">{user?.full_name}</p>
                       <p className="text-[11px] font-mono text-[var(--color-accent)] mt-0.5 font-semibold">
@@ -395,7 +395,7 @@ export default function Layout() {
                     </div>
                     <button
                       onClick={handleLogout}
-                      className="w-full inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors cursor-pointer btn-tactile"
+                      className="w-full inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-colors cursor-pointer btn-tactile"
                     >
                       <LogOut className="w-3.5 h-3.5 shrink-0" />
                       <span>Đăng xuất khỏi hệ thống</span>
@@ -404,21 +404,21 @@ export default function Layout() {
                 )}
               </div>
 
-              {/* Mobile Menu Button */}
+              {/* Mobile Menu Toggle Button */}
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 rounded-lg text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] hover:bg-[var(--color-paper-1)] border border-[var(--rule-hair)] cursor-pointer btn-tactile"
+                className="lg:hidden w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] bg-[var(--color-paper-1)]/60 hover:bg-[var(--color-paper-2)] border border-[var(--rule-hair)] cursor-pointer btn-tactile"
                 aria-label="Toggle mobile menu"
               >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
-          {/* Mobile Navigation Drawer */}
+          {/* Mobile Floating Drawer (Positioned smoothly below the pill) */}
           {mobileMenuOpen && (
-            <div className="lg:hidden py-3 border-t border-[var(--rule-hair)] space-y-1 animate-fade-in">
+            <div className="lg:hidden mt-2 p-2.5 rounded-2xl bg-[var(--color-paper-0)]/95 dark:bg-[var(--color-paper-0)]/90 backdrop-blur-xl border border-[var(--rule-soft)] shadow-xl pointer-events-auto space-y-1 animate-fade-in">
               {allNavItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
@@ -428,9 +428,9 @@ export default function Layout() {
                     key={item.path}
                     to={item.path}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition-colors ${
+                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-colors ${
                       isActive
-                        ? 'bg-[var(--color-paper-2)] text-[var(--color-accent)] font-semibold'
+                        ? 'bg-[var(--color-accent)] text-white font-semibold shadow-xs'
                         : 'text-[var(--color-ink-1)] hover:bg-[var(--color-paper-1)] hover:text-[var(--color-ink-0)]'
                     }`}
                   >
@@ -439,7 +439,9 @@ export default function Layout() {
                       <span>{item.name}</span>
                     </div>
                     {item.badge > 0 && (
-                      <span className="px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-mono font-bold leading-none">
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold leading-none ${
+                        isActive ? 'bg-white text-[var(--color-accent)]' : 'bg-rose-600 text-white'
+                      }`}>
                         {item.badge}
                       </span>
                     )}
@@ -452,7 +454,7 @@ export default function Layout() {
       </header>
 
       {/* ───────── Main Content Body ───────── */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-8">
         <Outlet />
       </main>
 
