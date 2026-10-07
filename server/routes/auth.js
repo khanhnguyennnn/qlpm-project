@@ -1,14 +1,25 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import db from '../database.js';
+import rateLimit from 'express-rate-limit';
+import db, { addAuditLog } from '../database.js';
 import { authenticateToken } from '../middleware/auth.js';
+import { sendPasswordResetEmail } from '../utils/mailer.js';
 
 const router = express.Router();
 const SECRET_KEY = process.env.JWT_SECRET || 'qlpm-secret-key-2024';
 
+// Rate limiter cho xác thực (chống brute force)
+export const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 phút
+  max: 30, // tối đa 30 yêu cầu / 15 phút
+  message: { error: 'Bạn đã gửi quá nhiều yêu cầu xác thực. Vui lòng thử lại sau 15 phút.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // 1. Đăng nhập bằng Tên đăng nhập, Mã số sinh viên (MSSV) hoặc Email
-router.post('/login', (req, res) => {
+router.post('/login', authLimiter, (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({ error: 'Vui lòng cung cấp mã số sinh viên / tên đăng nhập và mật khẩu' });
@@ -219,6 +230,109 @@ router.get('/me', authenticateToken, (req, res) => {
     return res.status(404).json({ error: 'Không tìm thấy người dùng' });
   }
   res.json(user);
+});
+
+// 5. Yêu cầu mã OTP khôi phục mật khẩu (Forgot Password)
+router.post('/forgot-password', authLimiter, async (req, res) => {
+  try {
+    const rawTarget = req.body.email || req.body.email_or_mssv;
+    if (!rawTarget) {
+      return res.status(400).json({ error: 'Vui lòng cung cấp địa chỉ email hoặc mã số sinh viên' });
+    }
+
+    const trimmed = String(rawTarget).trim();
+    const user = db.prepare(`
+      SELECT * FROM users 
+      WHERE LOWER(email) = LOWER(?) 
+         OR LOWER(username) = LOWER(?) 
+         OR UPPER(student_id) = UPPER(?)
+    `).get(trimmed, trimmed, trimmed);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Không tìm thấy tài khoản tương ứng với thông tin đã nhập' });
+    }
+
+    // Sinh mã OTP 6 số
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiry = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+
+    db.prepare('UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE id = ?').run(resetCode, expiry, user.id);
+
+    const targetEmail = user.email || `${user.username}@sis.hust.edu.vn`;
+    await sendPasswordResetEmail({ user: { ...user, email: targetEmail }, resetCode });
+
+    addAuditLog({
+      userId: user.id,
+      userName: user.full_name,
+      action: 'FORGOT_PASSWORD',
+      entityType: 'User',
+      entityId: user.id,
+      details: `Gửi mã OTP khôi phục đến ${targetEmail}`
+    });
+
+    res.json({
+      success: true,
+      message: `Mã OTP đã được gửi đến email ${targetEmail}. Vui lòng kiểm tra hộp thư (hoặc console server nếu dev).`,
+      email: targetEmail,
+      emailHint: targetEmail.replace(/(.{2})(.*)(?=@)/, (_, a, b) => a + '*'.repeat(b.length)),
+      debugCode: process.env.NODE_ENV !== 'production' ? resetCode : undefined
+    });
+  } catch (error) {
+    console.error('Lỗi forgot-password:', error);
+    res.status(500).json({ error: 'Đã xảy ra lỗi khi tạo mã khôi phục mật khẩu' });
+  }
+});
+
+// 6. Đặt lại mật khẩu mới bằng OTP (Reset Password)
+router.post('/reset-password', authLimiter, (req, res) => {
+  try {
+    const rawTarget = req.body.email || req.body.email_or_mssv;
+    const otp = req.body.otp;
+    const newPassword = req.body.newPassword || req.body.new_password;
+
+    if (!rawTarget || !otp || !newPassword) {
+      return res.status(400).json({ error: 'Vui lòng điền đầy đủ Email/MSSV, mã OTP và mật khẩu mới' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'Mật khẩu mới phải có tối thiểu 6 ký tự' });
+    }
+
+    const trimmed = String(rawTarget).trim();
+    const user = db.prepare(`
+      SELECT * FROM users 
+      WHERE (LOWER(email) = LOWER(?) OR LOWER(username) = LOWER(?) OR UPPER(student_id) = UPPER(?))
+        AND reset_token = ?
+    `).get(trimmed, trimmed, trimmed, otp.trim());
+
+    if (!user) {
+      return res.status(400).json({ error: 'Mã OTP không chính xác hoặc không khớp với tài khoản' });
+    }
+
+    if (user.reset_token_expiry && new Date(user.reset_token_expiry) < new Date()) {
+      return res.status(400).json({ error: 'Mã OTP đã hết hạn (chỉ có hiệu lực trong 15 phút). Vui lòng yêu cầu mã mới.' });
+    }
+
+    const hashedPassword = bcrypt.hashSync(newPassword, 10);
+    db.prepare('UPDATE users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE id = ?').run(hashedPassword, user.id);
+
+    addAuditLog({
+      userId: user.id,
+      userName: user.full_name,
+      action: 'RESET_PASSWORD',
+      entityType: 'User',
+      entityId: user.id,
+      details: 'Người dùng hoàn tất đổi mật khẩu qua mã OTP xác thực'
+    });
+
+    res.json({
+      success: true,
+      message: 'Đặt lại mật khẩu thành công! Bây giờ bạn có thể đăng nhập bằng mật khẩu mới.'
+    });
+  } catch (error) {
+    console.error('Lỗi reset-password:', error);
+    res.status(500).json({ error: 'Đã xảy ra lỗi khi đặt lại mật khẩu' });
+  }
 });
 
 export default router;

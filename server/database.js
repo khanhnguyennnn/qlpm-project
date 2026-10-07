@@ -139,6 +139,17 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (booking_id) REFERENCES bookings(id)
   );
+
+  CREATE TABLE IF NOT EXISTS audit_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    user_name TEXT,
+    action TEXT NOT NULL,
+    entity_type TEXT NOT NULL,
+    entity_id INTEGER,
+    details TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 // Migrations for existing databases
@@ -146,6 +157,13 @@ try { db.exec("ALTER TABLE users ADD COLUMN student_id TEXT;"); } catch (e) {}
 try { db.exec("ALTER TABLE users ADD COLUMN provider TEXT DEFAULT 'local';"); } catch (e) {}
 try { db.exec("ALTER TABLE users ADD COLUMN provider_id TEXT;"); } catch (e) {}
 try { db.exec("ALTER TABLE users ADD COLUMN avatar TEXT;"); } catch (e) {}
+try { db.exec("ALTER TABLE users ADD COLUMN reset_token TEXT;"); } catch (e) {}
+try { db.exec("ALTER TABLE users ADD COLUMN reset_token_expiry DATETIME;"); } catch (e) {}
+
+try { db.exec("ALTER TABLE bookings ADD COLUMN checkin_code TEXT;"); } catch (e) {}
+try { db.exec("ALTER TABLE bookings ADD COLUMN checked_in_at DATETIME;"); } catch (e) {}
+try { db.exec("ALTER TABLE bookings ADD COLUMN document_url TEXT;"); } catch (e) {}
+
 try {
   db.prepare("UPDATE users SET student_id = 'SV2024001' WHERE username = 'user1' AND (student_id IS NULL OR student_id = '')").run();
   db.prepare("UPDATE users SET student_id = 'SV2024002' WHERE username = 'user2' AND (student_id IS NULL OR student_id = '')").run();
@@ -287,6 +305,17 @@ if (userCount === 0) {
 
   save();
   console.log('Khởi tạo dữ liệu mẫu SQLite thành công!');
+}
+
+export function addAuditLog({ userId, userName, action, entityType, entityId, details }) {
+  try {
+    db.prepare(`
+      INSERT INTO audit_logs (user_id, user_name, action, entity_type, entity_id, details)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(userId || null, userName || 'Hệ thống', action, entityType, entityId || null, details || '');
+  } catch (err) {
+    console.error('Lỗi ghi audit log:', err);
+  }
 }
 
 export default db;

@@ -19,7 +19,8 @@ const BookingForm = () => {
     date: todayStr,
     startTime: initialHour ? `${initialHour}:00` : '07:00',
     endTime: initialHour ? `${String(Number(initialHour) + 1).padStart(2, '0')}:00` : '09:00',
-    purpose: ''
+    purpose: '',
+    documentUrl: ''
   });
   
   const [existingBookings, setExistingBookings] = useState([]);
@@ -85,7 +86,8 @@ const BookingForm = () => {
         room_id: formData.roomId,
         start_time: startDateTime,
         end_time: endDateTime,
-        purpose: formData.purpose
+        purpose: formData.purpose,
+        document_url: formData.documentUrl ? formData.documentUrl.trim() : null
       });
       
       setSuccess(true);
@@ -97,7 +99,7 @@ const BookingForm = () => {
       if (err.response && err.response.status === 409) {
         setError('Phòng này đã được đặt trong khung giờ này');
       } else {
-        setError(err.response?.data?.message || 'Có lỗi xảy ra khi đặt phòng');
+        setError(err.response?.data?.error || err.response?.data?.message || 'Có lỗi xảy ra khi đặt phòng');
       }
     } finally {
       setLoading(false);
@@ -287,7 +289,7 @@ const BookingForm = () => {
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5 font-mono">
-                Mục đích sử dụng phòng
+                Mục đích sử dụng phòng <span className="text-rose-500">*</span>
               </label>
               <textarea
                 name="purpose"
@@ -298,6 +300,33 @@ const BookingForm = () => {
                 placeholder="Ví dụ: Giảng dạy đồ án, học nhóm CLB sinh viên nghiên cứu khoa học..."
                 className="w-full px-4 py-3 bg-white/95 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-sm font-medium text-slate-800 dark:text-slate-100 shadow-sm transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 font-sans"
               ></textarea>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 font-mono">
+                  Link tài liệu / Giấy giới thiệu (Tùy chọn)
+                </label>
+                <span className="text-[10px] font-mono text-slate-400">Google Drive / OneDrive</span>
+              </div>
+              <input
+                type="url"
+                name="documentUrl"
+                value={formData.documentUrl}
+                onChange={handleChange}
+                placeholder="https://drive.google.com/file/d/..."
+                className="w-full px-4 py-2.5 bg-white/95 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-primary-600 focus:border-primary-600 text-xs sm:text-sm font-mono text-slate-800 dark:text-slate-100 shadow-sm transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
+              />
+              <p className="text-[11px] text-slate-400 mt-1 font-sans">
+                Đính kèm liên kết đề xuất hoặc văn bản ủy quyền của giảng viên hướng dẫn (nếu có).
+              </p>
+            </div>
+
+            <div className="p-3 bg-amber-500/10 border border-amber-500/25 rounded-2xl text-[11px] text-amber-800 dark:text-amber-300 font-sans flex items-start gap-2">
+              <Info className="w-4 h-4 flex-shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+              <span>
+                <strong>Hạn ngạch sinh viên:</strong> Mỗi tài khoản được gửi tối đa <strong>3 đơn mượn phòng chờ duyệt</strong> cùng lúc. Vui lòng đợi xét duyệt hoặc hủy đơn cũ trước khi tạo thêm.
+              </span>
             </div>
 
             {error && (

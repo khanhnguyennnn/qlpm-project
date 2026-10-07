@@ -4,8 +4,9 @@ import { useAuth } from '../contexts/AuthContext'
 import { 
   LogIn, User, Lock, Eye, EyeOff, 
   Mail, Phone, CheckCircle2, CreditCard, Sparkles, X, AlertCircle,
-  ArrowLeft, Sun, Moon, ShieldCheck, GraduationCap
+  ArrowLeft, Sun, Moon, ShieldCheck, GraduationCap, KeyRound, Send
 } from 'lucide-react'
+import api from '../utils/api'
 
 export default function Login() {
   const [activeTab, setActiveTab] = useState('login') // 'login' | 'register'
@@ -63,9 +64,101 @@ export default function Login() {
     customStudentId: ''
   })
 
-  useEffect(() => {
-    if (user) navigate('/')
-  }, [user, navigate])
+  // Quên mật khẩu & Khôi phục OTP state
+  const [forgotModal, setForgotModal] = useState({
+    isOpen: false,
+    step: 1, // 1: Nhập MSSV/Email để nhận mã OTP, 2: Nhập OTP & Mật khẩu mới
+    identifier: '',
+    otp: '',
+    newPassword: '',
+    confirmPassword: '',
+    maskedEmail: '',
+    loading: false,
+    error: '',
+    success: ''
+  })
+
+  const openForgotModal = () => {
+    clearMessages()
+    setForgotModal({
+      isOpen: true,
+      step: 1,
+      identifier: loginIdentifier || '',
+      otp: '',
+      newPassword: '',
+      confirmPassword: '',
+      maskedEmail: '',
+      loading: false,
+      error: '',
+      success: ''
+    })
+  }
+
+  const handleSendOtp = async (e) => {
+    e?.preventDefault()
+    if (!forgotModal.identifier.trim()) {
+      setForgotModal(prev => ({ ...prev, error: 'Vui lòng nhập MSSV hoặc Email đã đăng ký' }))
+      return
+    }
+    setForgotModal(prev => ({ ...prev, loading: true, error: '', success: '' }))
+    try {
+      const res = await api.post('/auth/forgot-password', { email_or_mssv: forgotModal.identifier.trim() })
+      setForgotModal(prev => ({
+        ...prev,
+        step: 2,
+        maskedEmail: res.data.email || 'email đã đăng ký',
+        success: res.data.message || 'Mã xác nhận OTP 6 số đã được gửi.',
+        loading: false
+      }))
+    } catch (err) {
+      setForgotModal(prev => ({
+        ...prev,
+        error: err.response?.data?.error || 'Không tìm thấy tài khoản hoặc không thể gửi OTP',
+        loading: false
+      }))
+    }
+  }
+
+  const handleResetPassword = async (e) => {
+    e?.preventDefault()
+    if (!forgotModal.otp.trim()) {
+      setForgotModal(prev => ({ ...prev, error: 'Vui lòng nhập mã OTP 6 số' }))
+      return
+    }
+    if (forgotModal.newPassword.length < 6) {
+      setForgotModal(prev => ({ ...prev, error: 'Mật khẩu mới phải có tối thiểu 6 ký tự' }))
+      return
+    }
+    if (forgotModal.newPassword !== forgotModal.confirmPassword) {
+      setForgotModal(prev => ({ ...prev, error: 'Mật khẩu xác nhận không khớp' }))
+      return
+    }
+    setForgotModal(prev => ({ ...prev, loading: true, error: '', success: '' }))
+    try {
+      await api.post('/auth/reset-password', {
+        email_or_mssv: forgotModal.identifier.trim(),
+        otp: forgotModal.otp.trim(),
+        new_password: forgotModal.newPassword
+      })
+      setForgotModal(prev => ({
+        ...prev,
+        success: 'Đặt lại mật khẩu thành công! Bạn có thể đăng nhập ngay.',
+        loading: false
+      }))
+      setTimeout(() => {
+        setLoginIdentifier(forgotModal.identifier)
+        setLoginPassword(forgotModal.newPassword)
+        setForgotModal(prev => ({ ...prev, isOpen: false }))
+        setSuccessMsg('Đã cập nhật mật khẩu mới! Vui lòng bấm Đăng nhập.')
+      }, 1500)
+    } catch (err) {
+      setForgotModal(prev => ({
+        ...prev,
+        error: err.response?.data?.error || 'Mã OTP không hợp lệ hoặc đã hết hạn',
+        loading: false
+      }))
+    }
+  }
 
   const clearMessages = () => {
     setError('')
@@ -355,6 +448,16 @@ export default function Login() {
                       title={showLoginPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
                     >
                       {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-end pt-1">
+                    <button
+                      type="button"
+                      onClick={openForgotModal}
+                      className="text-xs text-[var(--color-accent)] hover:underline font-mono inline-flex items-center gap-1 cursor-pointer transition-colors"
+                    >
+                      <KeyRound className="w-3.5 h-3.5" />
+                      <span>Quên mật khẩu?</span>
                     </button>
                   </div>
                 </div>
@@ -760,6 +863,153 @@ export default function Login() {
                   <span>{loading ? 'Đang xác thực...' : 'Tiếp tục đăng nhập'}</span>
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ───────── FORGOT PASSWORD OTP MODAL ───────── */}
+      {forgotModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fadeIn">
+          <div className="luxury-login-card w-full max-w-md shadow-2xl overflow-hidden border border-amber-500/30">
+            {/* Modal Header */}
+            <div className="p-4 bg-gradient-to-r from-[var(--color-accent)] to-rose-900 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2 font-bold font-serif text-sm">
+                <KeyRound className="w-4 h-4 text-amber-300" />
+                <span>Khôi phục mật khẩu tài khoản</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setForgotModal(prev => ({ ...prev, isOpen: false }))}
+                className="text-white/80 hover:text-white p-1 rounded-lg cursor-pointer transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-5 sm:p-6 space-y-4">
+              {forgotModal.error && (
+                <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 rounded-xl text-xs flex items-start gap-2 animate-fadeIn font-sans">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-500 mt-0.5" />
+                  <span>{forgotModal.error}</span>
+                </div>
+              )}
+
+              {forgotModal.success && (
+                <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 rounded-xl text-xs flex items-center gap-2 animate-fadeIn font-sans">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-500" />
+                  <span>{forgotModal.success}</span>
+                </div>
+              )}
+
+              {forgotModal.step === 1 ? (
+                <form onSubmit={handleSendOtp} className="space-y-4">
+                  <p className="text-xs text-[var(--color-ink-1)] font-sans">
+                    Nhập <strong>Mã số sinh viên (MSSV)</strong> hoặc <strong>Email</strong> liên kết với tài khoản. Hệ thống sẽ cấp mã OTP xác minh gồm 6 số có hiệu lực trong 15 phút.
+                  </p>
+
+                  <div>
+                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--color-ink-1)] mb-1">
+                      MSSV hoặc Email
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-ink-2)]" />
+                      <input
+                        type="text"
+                        value={forgotModal.identifier}
+                        onChange={(e) => setForgotModal(prev => ({ ...prev, identifier: e.target.value }))}
+                        className="w-full pl-10 pr-4 py-2.5 luxury-input rounded-xl text-xs sm:text-sm font-mono"
+                        placeholder="VD: SV2024001 hoặc sinhvien@hust.edu.vn"
+                        required
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={forgotModal.loading}
+                    className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-[var(--color-accent)] to-rose-700 hover:brightness-105 active:scale-[0.98] disabled:opacity-50 text-white font-bold rounded-xl text-xs sm:text-sm transition-all shadow-md cursor-pointer btn-tactile font-serif"
+                  >
+                    {forgotModal.loading ? (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin flex-shrink-0" />
+                    ) : (
+                      <Send className="w-4 h-4 flex-shrink-0" />
+                    )}
+                    <span>{forgotModal.loading ? 'Đang gửi mã...' : 'Gửi mã xác nhận OTP'}</span>
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleResetPassword} className="space-y-3.5">
+                  <p className="text-xs text-[var(--color-ink-1)] font-sans">
+                    Vui lòng nhập mã OTP đã nhận qua email và đặt mật khẩu đăng nhập mới:
+                  </p>
+
+                  <div>
+                    <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--color-ink-1)] mb-1">
+                      Mã xác nhận OTP (6 chữ số)
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={6}
+                      value={forgotModal.otp}
+                      onChange={(e) => setForgotModal(prev => ({ ...prev, otp: e.target.value }))}
+                      className="w-full px-4 py-2.5 luxury-input rounded-xl text-center text-lg font-mono font-bold tracking-widest text-[var(--color-accent)]"
+                      placeholder="000000"
+                      required
+                      autoFocus
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--color-ink-1)] mb-1">
+                        Mật khẩu mới
+                      </label>
+                      <input
+                        type="password"
+                        value={forgotModal.newPassword}
+                        onChange={(e) => setForgotModal(prev => ({ ...prev, newPassword: e.target.value }))}
+                        className="w-full px-3 py-2 luxury-input rounded-xl text-xs sm:text-sm font-sans"
+                        placeholder="Ít nhất 6 ký tự"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--color-ink-1)] mb-1">
+                        Xác nhận lại
+                      </label>
+                      <input
+                        type="password"
+                        value={forgotModal.confirmPassword}
+                        onChange={(e) => setForgotModal(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                        className="w-full px-3 py-2 luxury-input rounded-xl text-xs sm:text-sm font-sans"
+                        placeholder="Nhập lại mật khẩu"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-between gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setForgotModal(prev => ({ ...prev, step: 1, error: '', success: '' }))}
+                      className="text-xs font-mono text-[var(--color-ink-2)] hover:text-[var(--color-ink-0)] underline cursor-pointer"
+                    >
+                      ← Nhận lại mã OTP
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={forgotModal.loading}
+                      className="inline-flex items-center justify-center gap-2 py-2 px-4 bg-gradient-to-r from-[var(--color-accent)] to-rose-700 hover:brightness-105 active:scale-[0.98] disabled:opacity-50 text-white font-bold rounded-xl text-xs transition-all shadow-md cursor-pointer btn-tactile font-serif"
+                    >
+                      {forgotModal.loading ? 'Đang cập nhật...' : 'Xác nhận đổi mật khẩu'}
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           </div>
         </div>

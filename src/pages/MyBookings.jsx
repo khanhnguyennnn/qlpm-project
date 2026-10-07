@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { STATUS_MAP, formatDateTime } from '../utils/helpers';
-import { Calendar, AlertCircle, X, Search, Loader2 } from 'lucide-react';
+import { Calendar, AlertCircle, X, Search, Loader2, KeyRound, CheckCheck, FileText } from 'lucide-react';
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -144,7 +144,24 @@ const MyBookings = () => {
                 {bookings.map((booking) => (
                   <tr key={booking.id || booking._id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-900 dark:text-white font-serif">
-                      {booking.room?.name || booking.room_name || 'N/A'}
+                      <div>{booking.room?.name || booking.room_name || 'N/A'}</div>
+                      {booking.checkin_code && booking.status === 'approved' && (
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 font-mono text-[11px] font-bold">
+                            <KeyRound className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                            <span>Mã PIN: {booking.checkin_code}</span>
+                          </span>
+                          {booking.checked_in_at ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-sans font-semibold">
+                              <CheckCheck className="w-3.5 h-3.5" /> Đã nhận phòng
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-sans italic">
+                              (Xuất trình khi nhận phòng)
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300 font-mono">
                       {formatDateTime ? (
@@ -176,6 +193,19 @@ const MyBookings = () => {
                       )}
                       {booking.status === 'cancelled' && (
                         <div className="text-slate-400 text-xs mt-1" title={booking.cancel_reason}>Lý do: {booking.cancel_reason}</div>
+                      )}
+                      {booking.document_url && (
+                        <div className="mt-1">
+                          <a
+                            href={booking.document_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 text-xs text-primary-600 dark:text-primary-400 hover:underline font-mono"
+                          >
+                            <FileText className="w-3.5 h-3.5" />
+                            <span>Văn bản đính kèm</span>
+                          </a>
+                        </div>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

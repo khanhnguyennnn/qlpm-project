@@ -1,39 +1,42 @@
-# QLPH - Hệ Thống Quản Lý Mượn Phòng Học
+# QLPH - Hệ Thống Quản Lý Mượn Phòng Học (SEEE · HUST SINCE 1956)
 
-Ứng dụng web toàn diện dành cho trường học và trung tâm đào tạo giúp số hóa quy trình mượn phòng học, ngăn chặn triệt để tình trạng trùng lặp lịch, cung cấp lịch tuần trực quan và báo cáo thống kê sử dụng chi tiết.
+Ứng dụng web toàn diện dành cho trường học và trung tâm đào tạo giúp số hóa quy trình mượn phòng học, ngăn chặn triệt để tình trạng trùng lặp lịch, cung cấp lịch tuần trực quan, hệ thống tiếp đón điểm danh bằng mã PIN và nhật ký kiểm toán hệ thống.
 
 ---
 
-## 🚀 Tính Năng Chính
+## 🚀 Tính Năng Chính Được Nâng Cấp Toàn Diện
 
-### 1. Đăng ký & Đăng nhập Đa phương thức (Mới)
+### 1. Đăng ký & Đăng nhập & Khôi phục mật khẩu (Production-Ready)
 - **Tạo tài khoản sinh viên**: Nhập trực tiếp **Mã số sinh viên (MSSV)**, Họ tên, Email, Số điện thoại và Mật khẩu. Hệ thống tự động kiểm tra trùng lặp và đăng nhập ngay khi tạo thành công.
 - **Đăng nhập linh hoạt**: Hỗ trợ đăng nhập bằng **Mã số sinh viên (MSSV)** (VD: `SV2024001`) hoặc **Tên đăng nhập** (VD: `user1`, `admin`) cùng mật khẩu.
+- **Khôi phục mật khẩu OTP 6 số**: Cơ chế quên mật khẩu bảo mật gửi mã OTP 6 số (hết hạn sau 15 phút) qua email sinh viên để đặt lại mật khẩu mới an toàn.
 - **Đăng nhập một chạm qua Google & Facebook**: Tự động tạo và liên kết tài khoản sinh viên khi xác thực qua tài khoản Google hoặc Facebook.
 
-### 2. Phân quyền và Bảo mật (2 vai trò)
-- **Người mượn (Giáo viên / Nhân viên / Sinh viên)**:
-  - Đăng nhập và tra cứu danh mục phòng học.
-  - Xem thông tin chi tiết phòng (sức chứa, vị trí, trang thiết bị) và bảng lịch tuần trực quan (07:00 - 21:00).
-  - Gửi yêu cầu mượn phòng với kiểm tra trùng lịch tự động.
-  - Theo dõi trạng thái mượn (Chờ duyệt, Đã duyệt, Từ chối, Đã hủy).
-  - Hủy lịch mượn của chính mình (yêu cầu cung cấp lý do hủy).
-- **Quản trị viên (Admin)**:
-  - Menu quản trị chuyên biệt với badge thông báo số lượng yêu cầu chờ duyệt.
-  - Màn hình duyệt / từ chối yêu cầu kèm cảnh báo xung đột lịch trực quan.
-  - Quản lý danh mục phòng học (Thêm, Sửa, Xóa, Bật/Tắt bảo trì, chọn thiết bị tiện ích).
-  - Báo cáo thống kê toàn diện: tổng lượt mượn, tỷ lệ duyệt theo phòng, biểu đồ xu hướng theo tuần/tháng.
-  - Quyền hủy mọi lịch mượn kèm lý do.
+### 2. Thông báo Email Tự Động (Email Notifications)
+- Tích hợp dịch vụ email thông báo HTML chuẩn giao diện Bách Khoa:
+  - 📩 Gửi email xác nhận ngay khi sinh viên nộp đơn mượn phòng.
+  - 📩 Gửi email phê duyệt kèm **Mã PIN Tiếp đón (HUST-XXXX)** khi hội đồng duyệt.
+  - 📩 Gửi email giải thích lý do cụ thể khi yêu cầu bị từ chối.
+  - 📩 Gửi mã OTP xác minh khôi phục mật khẩu.
+  - *Chế độ DEV: Tự động ghi log mô phỏng email trực tiếp tại terminal nếu chưa cấu hình SMTP.*
 
-### 3. Thuật toán ngăn chặn trùng lịch (Conflict Detection)
-- Tự động kiểm tra xung đột thời gian tại cả **frontend** (cảnh báo trực quan khi duyệt) và **backend** (chặn triệt để tại cấp cơ sở dữ liệu với mã lỗi 409):
-  $$\text{start}_{\text{mới}} < \text{end}_{\text{đã duyệt}} \quad \text{AND} \quad \text{end}_{\text{mới}} > \text{start}_{\text{đã duyệt}}$$
+### 3. Tiếp Đón & Điểm Danh Nhận Phòng (Check-in Verification)
+- Mỗi đơn mượn khi được duyệt sẽ được cấp một **Mã PIN Tiếp đón độc nhất** dạng `HUST-XXXX`.
+- Sinh viên có thể xuất trình mã PIN này trên trang **Lịch sử của tôi**.
+- Quản trị viên / Nhân viên trực phòng có tab **Điểm danh & Tiếp đón** để tra cứu mã PIN/MSSV và bấm **Xác nhận Check-in** lưu vết thời gian thực.
 
-### 4. Chuẩn màu trạng thái thống nhất
-- 🟡 **Vàng**: Chờ duyệt (`pending`)
-- 🟢 **Xanh lá**: Đã duyệt (`approved`)
-- 🔴 **Đỏ**: Từ chối (`rejected`)
-- ⚪ **Xám**: Đã hủy (`cancelled`)
+### 4. Hạn Ngạch Chống Spam & Tải Văn Bản Đính Kèm
+- **Hạn ngạch sinh viên**: Mỗi sinh viên chỉ được gửi tối đa **3 đơn mượn phòng chờ duyệt** cùng lúc nhằm ngăn chặn hành vi giữ chỗ ảo.
+- **Đính kèm tài liệu**: Hỗ trợ đính kèm liên kết đề xuất (Google Drive, OneDrive, PDF) cho các buổi báo cáo, hội thảo cần phê duyệt đặc biệt.
+
+### 5. Nhật Ký Kiểm Toán Hệ Thống (Audit Trail)
+- Lưu vết toàn bộ các thao tác trọng yếu vào bảng `audit_logs`: ai đã duyệt, từ chối, hủy đơn, điểm danh nhận phòng, hoặc khôi phục mật khẩu.
+- Giao diện Admin có tab **Nhật ký hệ thống** trực quan, minh bạch.
+
+### 6. An Toàn & Bảo Mật Chuẩn Doanh Nghiệp
+- **Helmet**: Tăng cường bảo mật HTTP headers, chống clickjacking và sniffing.
+- **Rate Limiting**: Giới hạn tần suất gọi API đăng nhập và khôi phục mật khẩu chống brute-force.
+- **Health Check Probes**: Cung cấp `/health` và `/api/health` sẵn sàng cho Render/Railway/Kubernetes monitoring.
 
 ---
 
@@ -51,23 +54,28 @@
 ## 🛠️ Công Nghệ Sử Dụng
 
 - **Frontend**: React 18, React Router v6, Tailwind CSS, Lucide React, date-fns, Axios.
-- **Backend**: Node.js, Express, sql.js (SQLite embedded), JWT, bcryptjs, CORS.
-- **Tập tin cơ sở dữ liệu**: Tự động lưu và đồng bộ tại `database.sqlite`.
+- **Backend**: Node.js, Express, Helmet, Express-Rate-Limit, Nodemailer, sql.js / PostgreSQL.
+- **Deploy**: Sẵn sàng deploy PaaS với cấu hình `render.yaml`, `vercel.json`, `.env.example`.
 
 ---
 
 ## 💻 Hướng Dẫn Khởi Chạy
 
-Ứng dụng hiện đang được chạy sẵn ở cổng `3001` (phục vụ cả API và giao diện):
-
-- **Truy cập ứng dụng**: [http://localhost:3001](http://localhost:3001)
-
-Nếu muốn khởi chạy môi trường phát triển (Hot-reload):
 ```powershell
 # Chạy cả Backend và Frontend dev server cùng lúc:
 npm run dev
 
-# Hoặc chạy riêng:
-npm run dev:server   # Backend tại http://localhost:3001
-npm run dev:client   # Frontend Vite tại http://localhost:5173
+# Build mã nguồn cho môi trường production:
+npm run build
+
+# Khởi chạy server production (Node serving dist):
+npm start
 ```
+
+---
+
+## ☁️ Triển Khai Lên Cloud PaaS (Render / Vercel)
+
+1. Sao chép `.env.example` thành `.env` và điền cấu hình (hoặc nhập vào Environment Variables của PaaS).
+2. Khi deploy lên **Render**: Chọn *Web Service*, kết nối repo GitHub, chọn cấu hình từ file `render.yaml`.
+3. Khi deploy frontend lên **Vercel**: Vercel sẽ tự động đọc `vercel.json` và build Vite dist.

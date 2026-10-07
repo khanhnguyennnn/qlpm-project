@@ -12,18 +12,23 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.7.7",
+    "bcryptjs": "^2.4.3",
+    "concurrently": "^9.1.0",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "dotenv": "^18.0.6",
+    "express": "^4.21.1",
+    "express-rate-limit": "^8.7.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.460.0",
+    "nodemailer": "^10.0.15",
+    "pg": "^8.23.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0",
-    "axios": "^1.7.7",
-    "date-fns": "^4.1.0",
-    "lucide-react": "^0.460.0",
-    "express": "^4.21.1",
-    "sql.js": "^1.11.0",
-    "jsonwebtoken": "^9.0.2",
-    "bcryptjs": "^2.4.3",
-    "cors": "^2.8.5",
-    "concurrently": "^9.1.0"
+    "sql.js": "^1.11.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",
