@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { 
   LogIn, User, Lock, Eye, EyeOff, 
   Mail, Phone, CheckCircle2, CreditCard, Sparkles, X, AlertCircle,
-  ArrowLeft, Sun, Moon, ShieldCheck, GraduationCap, KeyRound, Send
+  ArrowLeft, Sun, Moon, ShieldCheck, GraduationCap, KeyRound, Send, UserPlus
 } from 'lucide-react'
 import api from '../utils/api'
 
@@ -428,7 +428,7 @@ export default function Login() {
                       Mật khẩu
                     </label>
                     <span className="text-[11px] text-[var(--color-ink-2)] font-sans">
-                      (admin123 / user123)
+                      (admin: khanh1211 / test: 123456)
                     </span>
                   </div>
                   <div className="relative">
@@ -667,7 +667,7 @@ export default function Login() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <button
                   type="button"
-                  onClick={() => handleAutofill('admin', 'admin123', 'Quản trị viên')}
+                  onClick={() => handleAutofill('admin', 'khanh1211', 'Quản trị viên')}
                   className="autofill-chip text-left p-2 rounded-xl bg-[var(--color-paper-1)] border border-[var(--rule-soft)] cursor-pointer"
                   title="Điền tài khoản Quản trị viên"
                 >
@@ -676,37 +676,42 @@ export default function Login() {
                     <span>Quản trị viên</span>
                   </div>
                   <div className="text-[10px] font-mono text-[var(--color-ink-2)] mt-0.5">
-                    admin / admin123
+                    admin / khanh1211
                   </div>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => handleAutofill('SV2024001', 'user123', 'Sinh viên 1')}
+                  onClick={() => handleAutofill('user_test', '123456', 'Sinh viên Test')}
                   className="autofill-chip text-left p-2 rounded-xl bg-[var(--color-paper-1)] border border-[var(--rule-soft)] cursor-pointer"
-                  title="Điền tài khoản Sinh viên 1"
+                  title="Điền tài khoản Sinh viên Test"
                 >
                   <div className="flex items-center gap-1 text-[11px] font-bold text-[var(--color-ink-0)] font-serif">
                     <GraduationCap className="w-3 h-3 text-amber-500" />
-                    <span>Sinh viên 1</span>
+                    <span>Sinh viên Test</span>
                   </div>
                   <div className="text-[10px] font-mono text-[var(--color-ink-2)] mt-0.5">
-                    SV2024001 / user123
+                    user_test / 123456
                   </div>
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => handleAutofill('SV2024002', 'user123', 'Sinh viên 2')}
-                  className="autofill-chip text-left p-2 rounded-xl bg-[var(--color-paper-1)] border border-[var(--rule-soft)] cursor-pointer"
-                  title="Điền tài khoản Sinh viên 2"
+                  onClick={() => {
+                    setActiveTab('register')
+                    clearMessages()
+                    setAutofillNotice('👉 Vui lòng nhập thông tin để tạo tài khoản sinh viên mới')
+                    setTimeout(() => setAutofillNotice(''), 3500)
+                  }}
+                  className="autofill-chip text-left p-2 rounded-xl bg-[var(--color-paper-1)] border border-[var(--rule-soft)] cursor-pointer hover:border-[var(--color-accent)] transition-colors"
+                  title="Chuyển sang trang tạo tài khoản mới"
                 >
-                  <div className="flex items-center gap-1 text-[11px] font-bold text-[var(--color-ink-0)] font-serif">
-                    <GraduationCap className="w-3 h-3 text-amber-500" />
-                    <span>Sinh viên 2</span>
+                  <div className="flex items-center gap-1 text-[11px] font-bold text-[var(--color-accent)] font-serif">
+                    <UserPlus className="w-3 h-3 text-[var(--color-accent)]" />
+                    <span>Đăng ký mới</span>
                   </div>
                   <div className="text-[10px] font-mono text-[var(--color-ink-2)] mt-0.5">
-                    SV2024002 / user123
+                    Tự tạo nick cá nhân
                   </div>
                 </button>
               </div>

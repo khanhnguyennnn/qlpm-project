@@ -165,10 +165,58 @@ try { db.exec("ALTER TABLE bookings ADD COLUMN checked_in_at DATETIME;"); } catc
 try { db.exec("ALTER TABLE bookings ADD COLUMN document_url TEXT;"); } catch (e) {}
 
 try {
+  const hashPw = (p) => bcrypt.hashSync(p, 10);
+
+  // 1. Cập nhật / Đảm bảo tài khoản admin có mật khẩu khanh1211
+  const adminUser = db.prepare("SELECT id FROM users WHERE username = 'admin'").get();
+  if (adminUser) {
+    db.prepare(`
+      UPDATE users 
+      SET password = ?, role = 'admin', full_name = 'Quản trị viên (Khánh)', email = 'khanhnguyenn12112006@gmail.com'
+      WHERE id = ?
+    `).run(hashPw('khanh1211'), adminUser.id);
+  } else {
+    db.prepare(`
+      INSERT INTO users (username, student_id, password, full_name, email, role, provider)
+      VALUES ('admin', 'ADMIN_KHANH', ?, 'Quản trị viên (Khánh)', 'khanhnguyenn12112006@gmail.com', 'admin', 'local')
+    `).run(hashPw('khanh1211'));
+  }
+
+  // 2. Tài khoản alias khanh với quyền admin và mật khẩu khanh1211
+  const khanhUser = db.prepare("SELECT id FROM users WHERE username = 'khanh'").get();
+  if (khanhUser) {
+    db.prepare(`
+      UPDATE users 
+      SET password = ?, role = 'admin', full_name = 'Quản trị viên (Khánh)', email = 'khanhnguyenn12112006@gmail.com'
+      WHERE id = ?
+    `).run(hashPw('khanh1211'), khanhUser.id);
+  } else {
+    db.prepare(`
+      INSERT INTO users (username, student_id, password, full_name, email, role, provider)
+      VALUES ('khanh', 'KHANH1211', ?, 'Quản trị viên (Khánh)', 'khanhnguyenn12112006@gmail.com', 'admin', 'local')
+    `).run(hashPw('khanh1211'));
+  }
+
+  // 3. Tài khoản sinh viên test để người dùng thử nghiệm
+  const testUser = db.prepare("SELECT id FROM users WHERE username = 'user_test' OR student_id = 'SV2026999'").get();
+  if (testUser) {
+    db.prepare(`
+      UPDATE users 
+      SET username = 'user_test', student_id = 'SV2026999', password = ?, full_name = 'Sinh Viên Test', role = 'user'
+      WHERE id = ?
+    `).run(hashPw('123456'), testUser.id);
+  } else {
+    db.prepare(`
+      INSERT INTO users (username, student_id, password, full_name, email, role, provider)
+      VALUES ('user_test', 'SV2026999', ?, 'Sinh Viên Test', 'test.sinhvien@hust.edu.vn', 'user', 'local')
+    `).run(hashPw('123456'));
+  }
+
   db.prepare("UPDATE users SET student_id = 'SV2024001' WHERE username = 'user1' AND (student_id IS NULL OR student_id = '')").run();
   db.prepare("UPDATE users SET student_id = 'SV2024002' WHERE username = 'user2' AND (student_id IS NULL OR student_id = '')").run();
-  db.prepare("UPDATE users SET student_id = 'ADMIN001' WHERE username = 'admin' AND (student_id IS NULL OR student_id = '')").run();
-} catch (e) {}
+} catch (e) {
+  console.error("Migration users error:", e);
+}
 
 // Migration: cập nhật danh sách phòng theo bản đồ Đại học Bách Khoa Hà Nội
 try {
