@@ -199,258 +199,257 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--color-paper-0)] text-[var(--color-ink-0)] selection:bg-[var(--color-accent)] selection:text-white transition-colors duration-200">
-      {/* ───────── Floating Pill Navigation Bar ───────── */}
-      <header className="fixed top-2 sm:top-3.5 inset-x-0 z-40 px-3 sm:px-6 pointer-events-none transition-all duration-300">
-        <div className="max-w-6xl mx-auto">
-          {/* Main Floating Pill Capsule */}
-          <div className="pointer-events-auto h-14 sm:h-15 px-3 sm:px-4.5 rounded-full bg-[var(--color-paper-0)]/90 dark:bg-[var(--color-paper-0)]/85 backdrop-blur-xl border border-[var(--rule-soft)] shadow-lg shadow-black/5 dark:shadow-black/30 flex items-center justify-between gap-2 sm:gap-4 transition-all">
-            
-            {/* University & School Identity */}
-            <NavLink to="/" className="flex items-center gap-2.5 group shrink-0" title="Trang chủ QLPH SEEE - Đại Học Bách Khoa Hà Nội">
-              <div className="w-9 h-9 sm:w-9.5 sm:h-9.5 rounded-full bg-white shadow-xs border border-[var(--rule-soft)] flex items-center justify-center overflow-hidden p-1 shrink-0 group-hover:scale-105 transition-transform">
-                <img 
-                  src="/logo.png" 
-                  alt="SEEE Logo" 
-                  className="h-full w-auto object-contain max-h-7" 
-                />
-              </div>
-              <div className="flex flex-col text-left">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-display font-bold text-sm sm:text-base tracking-tight text-[var(--color-ink-0)] leading-none">
-                    SEEE
-                  </span>
-                  <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-[var(--color-accent)] px-1.5 py-0.5 rounded-full bg-[var(--color-accent-tint)] border border-[var(--rule-hair)]">
-                    QLPH
-                  </span>
-                </div>
-                <span className="hidden sm:inline-block text-[9px] font-mono tracking-wider uppercase text-[var(--color-ink-2)] mt-0.5 leading-none">
-                  BÁCH KHOA · SINCE 1956
-                </span>
-              </div>
-            </NavLink>
+      {/* ───────── Hallmark N5 Floating Pill Navigation Bar ───────── */}
+      <header className="fixed top-3 sm:top-4 inset-x-0 z-40 px-3 sm:px-4 pointer-events-none flex flex-col items-center">
+        {/* Main Floating Pill Capsule: Content-Hugging & Horizontally Centered */}
+        <div className="pointer-events-auto h-13 sm:h-14 px-2.5 sm:px-3.5 rounded-full bg-[var(--color-paper-0)]/85 dark:bg-[var(--color-paper-0)]/80 backdrop-blur-2xl backdrop-saturate-150 border border-[var(--rule-soft)] ring-1 ring-white/40 dark:ring-white/5 shadow-[0_8px_30px_-6px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_40px_-10px_rgba(0,0,0,0.6)] inline-flex items-center gap-1.5 sm:gap-2.5 max-w-[calc(100vw-1.5rem)] transition-all duration-300">
+          
+          {/* University & School Identity */}
+          <NavLink to="/" className="flex items-center gap-2 group shrink-0 pl-1 pr-1" title="Trang chủ QLPH SEEE - Đại Học Bách Khoa Hà Nội">
+            <div className="w-8 h-8 rounded-full bg-white shadow-2xs border border-[var(--rule-soft)] flex items-center justify-center overflow-hidden p-0.5 shrink-0 group-hover:scale-105 transition-transform duration-200">
+              <img 
+                src="/logo.png" 
+                alt="SEEE Logo" 
+                className="h-full w-auto object-contain max-h-6.5" 
+              />
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="font-display font-bold text-sm sm:text-base tracking-tight text-[var(--color-ink-0)] leading-none">
+                SEEE
+              </span>
+              <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-[var(--color-accent)] px-1.5 py-0.5 rounded-full bg-[var(--color-accent-tint)] border border-[var(--rule-hair)]">
+                QLPH
+              </span>
+            </div>
+          </NavLink>
 
-            {/* Desktop Floating Pill Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-[var(--color-paper-1)]/70 dark:bg-[var(--color-paper-1)]/50 border border-[var(--rule-hair)] font-sans text-xs">
-              {allNavItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.path;
+          {/* Hairline Divider */}
+          <div className="hidden lg:block h-4 w-px bg-[var(--rule-hair)] shrink-0" />
 
-                return (
-                  <NavLink
-                    key={item.path}
-                    to={item.path}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-medium transition-all duration-200 ${
-                      isActive
-                        ? 'bg-[var(--color-accent)] text-white font-semibold shadow-xs shadow-[rgba(180,20,30,0.25)]'
-                        : 'text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] hover:bg-[var(--color-paper-2)]/60'
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5 shrink-0" />
-                    <span>{item.name}</span>
-                    {item.badge > 0 && (
-                      <span className={`ml-0.5 px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold leading-none ${
-                        isActive ? 'bg-white text-[var(--color-accent)]' : 'bg-rose-600 text-white'
-                      }`}>
-                        {item.badge}
-                      </span>
-                    )}
-                  </NavLink>
-                );
-              })}
-            </nav>
+          {/* Desktop Floating Pill Navigation Links */}
+          <nav className="hidden lg:flex items-center gap-0.5 p-0.5 rounded-full bg-[var(--color-paper-1)]/60 dark:bg-[var(--color-paper-1)]/40 border border-[var(--rule-hair)] font-sans text-xs shrink-0">
+            {allNavItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
 
-            {/* Right Tools: Clock, Theme, Notifications, Profile, Mobile Toggle */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              
-              {/* Real-time Clock Capsule */}
-              <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--color-paper-1)]/80 dark:bg-[var(--color-paper-1)]/50 border border-[var(--rule-hair)] font-mono text-[11px] text-[var(--color-ink-1)] tabular-nums">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>
-                  {currentTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
-                </span>
-              </div>
-
-              {/* Theme Toggle Pill Button */}
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] bg-[var(--color-paper-1)]/60 hover:bg-[var(--color-paper-2)] border border-[var(--rule-hair)] transition-all cursor-pointer btn-tactile"
-                title={theme === 'dark' ? 'Chuyển sang giao diện Sáng' : 'Chuyển sang giao diện Tối'}
-                aria-label="Toggle dark/light mode"
-              >
-                {theme === 'dark' ? (
-                  <Sun className="w-4 h-4 text-amber-400" />
-                ) : (
-                  <Moon className="w-4 h-4 text-[var(--color-ink-1)]" />
-                )}
-              </button>
-
-              {/* Notification Bell Pill Button */}
-              <div className="relative" ref={notifRef}>
-                <button
-                  onClick={() => setNotifDropdownOpen(!notifDropdownOpen)}
-                  className="w-9 h-9 rounded-full relative flex items-center justify-center text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] bg-[var(--color-paper-1)]/60 hover:bg-[var(--color-paper-2)] border border-[var(--rule-hair)] transition-all cursor-pointer btn-tactile"
-                  title="Thông báo hệ thống"
-                  aria-label="Thông báo"
+              return (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 active:scale-[0.97] ${
+                    isActive
+                      ? 'bg-[var(--color-accent)] text-white font-semibold shadow-xs shadow-[rgba(180,20,30,0.3)]'
+                      : 'text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] hover:bg-[var(--color-paper-2)]/70'
+                  }`}
                 >
-                  <Bell className="w-4 h-4" />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[var(--color-accent)] text-white text-[9px] font-mono font-bold flex items-center justify-center ring-2 ring-[var(--color-paper-0)]">
-                      {unreadCount > 9 ? '9+' : unreadCount}
+                  <Icon className="w-3.5 h-3.5 shrink-0" />
+                  <span>{item.name}</span>
+                  {item.badge > 0 && (
+                    <span className={`ml-0.5 px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold leading-none ${
+                      isActive ? 'bg-white text-[var(--color-accent)]' : 'bg-rose-600 text-white'
+                    }`}>
+                      {item.badge}
                     </span>
                   )}
-                </button>
+                </NavLink>
+              );
+            })}
+          </nav>
 
-                {/* Notification Dropdown */}
-                {notifDropdownOpen && (
-                  <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-[var(--color-paper-0)] border border-[var(--rule-soft)] rounded-2xl shadow-2xl overflow-hidden z-50 animate-fade-in">
-                    <div className="p-3 bg-[var(--color-paper-1)] border-b border-[var(--rule-hair)] flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Bell className="w-4 h-4 text-[var(--color-accent)]" />
-                        <span className="text-xs font-bold text-[var(--color-ink-0)] font-sans">Thông báo hệ thống</span>
-                        {unreadCount > 0 && (
-                          <span className="bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 text-[10px] font-bold px-2 py-0.5 rounded-full font-mono">
-                            {unreadCount} mới
-                          </span>
-                        )}
-                      </div>
-                      {unreadCount > 0 && (
-                        <button
-                          onClick={handleMarkAllRead}
-                          className="text-[11px] text-[var(--color-accent)] font-semibold hover:underline cursor-pointer"
-                        >
-                          Đã đọc tất cả
-                        </button>
-                      )}
-                    </div>
+          {/* Hairline Divider */}
+          <div className="hidden sm:block h-4 w-px bg-[var(--rule-hair)] shrink-0" />
 
-                    <div className="max-h-80 overflow-y-auto divide-y divide-[var(--rule-hair)]">
-                      {notifications.length === 0 ? (
-                        <div className="p-8 text-center text-[var(--color-ink-2)] text-xs font-mono">
-                          Chưa có thông báo mới nào
-                        </div>
-                      ) : (
-                        notifications.map((notif) => (
-                          <div
-                            key={notif.id}
-                            onClick={() => handleNotificationClick(notif)}
-                            className={`p-3.5 hover:bg-[var(--color-paper-1)] cursor-pointer transition-colors flex items-start gap-3 ${
-                              notif.is_read === 0 ? 'bg-[var(--color-accent-tint)]' : ''
-                            }`}
-                          >
-                            <div className="mt-0.5 p-1.5 bg-[var(--color-paper-1)] rounded-md border border-[var(--rule-hair)] shrink-0">
-                              {getNotifIcon(notif.type)}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between gap-1 mb-0.5">
-                                <p className={`text-xs font-semibold truncate ${notif.is_read === 0 ? 'text-[var(--color-ink-0)]' : 'text-[var(--color-ink-1)]'}`}>
-                                  {notif.title}
-                                </p>
-                                {notif.is_read === 0 && (
-                                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] shrink-0"></span>
-                                )}
-                              </div>
-                              <p className="text-xs text-[var(--color-ink-1)] line-clamp-2 leading-relaxed">
-                                {notif.message}
-                              </p>
-                              <span className="text-[10px] font-mono text-[var(--color-ink-2)] mt-1 block">
-                                {formatNotifTime(notif.created_at)}
-                              </span>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+          {/* Right Tools: Clock, Theme, Notifications, Profile, Mobile Toggle */}
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 pr-0.5">
+            
+            {/* Real-time Clock Capsule */}
+            <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--color-paper-1)]/80 dark:bg-[var(--color-paper-1)]/40 border border-[var(--rule-hair)] font-mono text-[11px] text-[var(--color-ink-1)] tabular-nums">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>
+                {currentTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            </div>
 
-              {/* User Profile Pill */}
-              <div className="relative" ref={profileRef}>
-                <button
-                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                  className="flex items-center gap-2 p-1 sm:pr-2.5 rounded-full hover:bg-[var(--color-paper-1)] border border-transparent hover:border-[var(--rule-hair)] transition-all cursor-pointer btn-tactile"
-                  title="Tài khoản cá nhân"
-                >
-                  <div className="w-8 h-8 rounded-full bg-[var(--color-accent)] text-white font-bold flex items-center justify-center text-xs shadow-2xs">
-                    {user?.full_name ? user.full_name.charAt(0).toUpperCase() : 'U'}
-                  </div>
-                  <div className="hidden sm:flex flex-col text-left">
-                    <span className="text-xs font-semibold text-[var(--color-ink-0)] leading-tight max-w-[90px] truncate">
-                      {user?.full_name || 'Người dùng'}
-                    </span>
-                    <span className="text-[9px] font-mono text-[var(--color-ink-2)] leading-none mt-0.5">
-                      {isAdmin ? 'Quản trị viên' : (user?.student_id || 'Sinh viên')}
-                    </span>
-                  </div>
-                </button>
+            {/* Theme Toggle Pill Button */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] bg-[var(--color-paper-1)]/60 hover:bg-[var(--color-paper-2)] border border-[var(--rule-hair)] transition-all cursor-pointer btn-tactile active:scale-95"
+              title={theme === 'dark' ? 'Chuyển sang giao diện Sáng' : 'Chuyển sang giao diện Tối'}
+              aria-label="Toggle dark/light mode"
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-3.5 h-3.5 text-amber-400" />
+              ) : (
+                <Moon className="w-3.5 h-3.5 text-[var(--color-ink-1)]" />
+              )}
+            </button>
 
-                {profileDropdownOpen && (
-                  <div className="absolute right-0 mt-3 w-64 bg-[var(--color-paper-0)] border border-[var(--rule-soft)] rounded-2xl shadow-2xl p-3 z-50 animate-fade-in">
-                    <div className="pb-3 border-b border-[var(--rule-hair)] mb-2 px-1">
-                      <p className="text-xs font-bold text-[var(--color-ink-0)]">{user?.full_name}</p>
-                      <p className="text-[11px] font-mono text-[var(--color-accent)] mt-0.5 font-semibold">
-                        {isAdmin ? 'Quản trị viên (Admin)' : (user?.student_id ? `MSSV: ${user.student_id}` : user?.username)}
-                      </p>
-                    </div>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-colors cursor-pointer btn-tactile"
-                    >
-                      <LogOut className="w-3.5 h-3.5 shrink-0" />
-                      <span>Đăng xuất khỏi hệ thống</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Mobile Menu Toggle Button */}
+            {/* Notification Bell Pill Button */}
+            <div className="relative" ref={notifRef}>
               <button
-                type="button"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] bg-[var(--color-paper-1)]/60 hover:bg-[var(--color-paper-2)] border border-[var(--rule-hair)] cursor-pointer btn-tactile"
-                aria-label="Toggle mobile menu"
+                onClick={() => setNotifDropdownOpen(!notifDropdownOpen)}
+                className="w-8 h-8 rounded-full relative flex items-center justify-center text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] bg-[var(--color-paper-1)]/60 hover:bg-[var(--color-paper-2)] border border-[var(--rule-hair)] transition-all cursor-pointer btn-tactile active:scale-95"
+                title="Thông báo hệ thống"
+                aria-label="Thông báo"
               >
-                {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+                <Bell className="w-3.5 h-3.5" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[var(--color-accent)] text-white text-[8px] font-mono font-bold flex items-center justify-center ring-2 ring-[var(--color-paper-0)]">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
               </button>
-            </div>
-          </div>
 
-          {/* Mobile Floating Drawer (Positioned smoothly below the pill) */}
-          {mobileMenuOpen && (
-            <div className="lg:hidden mt-2 p-2.5 rounded-2xl bg-[var(--color-paper-0)]/95 dark:bg-[var(--color-paper-0)]/90 backdrop-blur-xl border border-[var(--rule-soft)] shadow-xl pointer-events-auto space-y-1 animate-fade-in">
-              {allNavItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.path;
-
-                return (
-                  <NavLink
-                    key={item.path}
-                    to={item.path}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-colors ${
-                      isActive
-                        ? 'bg-[var(--color-accent)] text-white font-semibold shadow-xs'
-                        : 'text-[var(--color-ink-1)] hover:bg-[var(--color-paper-1)] hover:text-[var(--color-ink-0)]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <Icon className="w-4 h-4 shrink-0" />
-                      <span>{item.name}</span>
+              {/* Notification Dropdown */}
+              {notifDropdownOpen && (
+                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-[var(--color-paper-0)] border border-[var(--rule-soft)] rounded-2xl shadow-2xl overflow-hidden z-50 animate-fade-in">
+                  <div className="p-3 bg-[var(--color-paper-1)] border-b border-[var(--rule-hair)] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Bell className="w-4 h-4 text-[var(--color-accent)]" />
+                      <span className="text-xs font-bold text-[var(--color-ink-0)] font-sans">Thông báo hệ thống</span>
+                      {unreadCount > 0 && (
+                        <span className="bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 text-[10px] font-bold px-2 py-0.5 rounded-full font-mono">
+                          {unreadCount} mới
+                        </span>
+                      )}
                     </div>
-                    {item.badge > 0 && (
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold leading-none ${
-                        isActive ? 'bg-white text-[var(--color-accent)]' : 'bg-rose-600 text-white'
-                      }`}>
-                        {item.badge}
-                      </span>
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={handleMarkAllRead}
+                        className="text-[11px] text-[var(--color-accent)] font-semibold hover:underline cursor-pointer"
+                      >
+                        Đã đọc tất cả
+                      </button>
                     )}
-                  </NavLink>
-                );
-              })}
+                  </div>
+
+                  <div className="max-h-80 overflow-y-auto divide-y divide-[var(--rule-hair)]">
+                    {notifications.length === 0 ? (
+                      <div className="p-8 text-center text-[var(--color-ink-2)] text-xs font-mono">
+                        Chưa có thông báo mới nào
+                      </div>
+                    ) : (
+                      notifications.map((notif) => (
+                        <div
+                          key={notif.id}
+                          onClick={() => handleNotificationClick(notif)}
+                          className={`p-3.5 hover:bg-[var(--color-paper-1)] cursor-pointer transition-colors flex items-start gap-3 ${
+                            notif.is_read === 0 ? 'bg-[var(--color-accent-tint)]' : ''
+                          }`}
+                        >
+                          <div className="mt-0.5 p-1.5 bg-[var(--color-paper-1)] rounded-md border border-[var(--rule-hair)] shrink-0">
+                            {getNotifIcon(notif.type)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-1 mb-0.5">
+                              <p className={`text-xs font-semibold truncate ${notif.is_read === 0 ? 'text-[var(--color-ink-0)]' : 'text-[var(--color-ink-1)]'}`}>
+                                {notif.title}
+                              </p>
+                              {notif.is_read === 0 && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] shrink-0"></span>
+                              )}
+                            </div>
+                            <p className="text-xs text-[var(--color-ink-1)] line-clamp-2 leading-relaxed">
+                              {notif.message}
+                            </p>
+                            <span className="text-[10px] font-mono text-[var(--color-ink-2)] mt-1 block">
+                              {formatNotifTime(notif.created_at)}
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+
+            {/* User Profile Pill */}
+            <div className="relative" ref={profileRef}>
+              <button
+                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                className="flex items-center gap-1.5 p-0.5 sm:pr-2 rounded-full hover:bg-[var(--color-paper-1)] border border-transparent hover:border-[var(--rule-hair)] transition-all cursor-pointer btn-tactile active:scale-95"
+                title="Tài khoản cá nhân"
+              >
+                <div className="w-7.5 h-7.5 rounded-full bg-[var(--color-accent)] text-white font-bold flex items-center justify-center text-xs shadow-2xs">
+                  {user?.full_name ? user.full_name.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <div className="hidden sm:flex flex-col text-left">
+                  <span className="text-xs font-semibold text-[var(--color-ink-0)] leading-tight max-w-[85px] truncate">
+                    {user?.full_name || 'Người dùng'}
+                  </span>
+                  <span className="text-[9px] font-mono text-[var(--color-ink-2)] leading-none mt-0.5">
+                    {isAdmin ? 'Admin' : (user?.student_id || 'Sinh viên')}
+                  </span>
+                </div>
+              </button>
+
+              {profileDropdownOpen && (
+                <div className="absolute right-0 mt-3 w-64 bg-[var(--color-paper-0)] border border-[var(--rule-soft)] rounded-2xl shadow-2xl p-3 z-50 animate-fade-in">
+                  <div className="pb-3 border-b border-[var(--rule-hair)] mb-2 px-1">
+                    <p className="text-xs font-bold text-[var(--color-ink-0)]">{user?.full_name}</p>
+                    <p className="text-[11px] font-mono text-[var(--color-accent)] mt-0.5 font-semibold">
+                      {isAdmin ? 'Quản trị viên (Admin)' : (user?.student_id ? `MSSV: ${user.student_id}` : user?.username)}
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl transition-colors cursor-pointer btn-tactile"
+                  >
+                    <LogOut className="w-3.5 h-3.5 shrink-0" />
+                    <span>Đăng xuất khỏi hệ thống</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile Menu Toggle Button */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden w-8 h-8 rounded-full flex items-center justify-center text-[var(--color-ink-1)] hover:text-[var(--color-ink-0)] bg-[var(--color-paper-1)]/60 hover:bg-[var(--color-paper-2)] border border-[var(--rule-hair)] cursor-pointer btn-tactile active:scale-95"
+              aria-label="Toggle mobile menu"
+            >
+              {mobileMenuOpen ? <X className="w-3.5 h-3.5" /> : <Menu className="w-3.5 h-3.5" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Floating Drawer (Positioned smoothly below the centered pill) */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden mt-2 w-full max-w-sm rounded-2xl p-2 bg-[var(--color-paper-0)]/95 dark:bg-[var(--color-paper-0)]/90 backdrop-blur-2xl border border-[var(--rule-soft)] shadow-2xl pointer-events-auto space-y-1 animate-fade-in">
+            {allNavItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+
+              return (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-colors ${
+                    isActive
+                      ? 'bg-[var(--color-accent)] text-white font-semibold shadow-xs'
+                      : 'text-[var(--color-ink-1)] hover:bg-[var(--color-paper-1)] hover:text-[var(--color-ink-0)]'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span>{item.name}</span>
+                  </div>
+                  {item.badge > 0 && (
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold leading-none ${
+                      isActive ? 'bg-white text-[var(--color-accent)]' : 'bg-rose-600 text-white'
+                    }`}>
+                      {item.badge}
+                    </span>
+                  )}
+                </NavLink>
+              );
+            })}
+          </div>
+        )}
       </header>
 
       {/* ───────── Main Content Body ───────── */}
