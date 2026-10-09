@@ -4,8 +4,7 @@ import { authenticateToken, requireAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.use(authenticateToken);
-
+// Cho phép xem danh sách phòng công khai, chỉ bảo vệ các thao tác sửa đổi (POST, PUT, DELETE)
 router.get('/', (req, res) => {
   const { status } = req.query;
   let rooms;
@@ -50,7 +49,7 @@ router.get('/:id', (req, res) => {
   res.json(room);
 });
 
-router.post('/', requireAdmin, (req, res) => {
+router.post('/', authenticateToken, requireAdmin, (req, res) => {
   const { name, capacity, location, equipment, status, description } = req.body;
   if (!name || !capacity) {
     return res.status(400).json({ error: 'Tên phòng và sức chứa là bắt buộc' });
@@ -71,7 +70,7 @@ router.post('/', requireAdmin, (req, res) => {
   }
 });
 
-router.put('/:id', requireAdmin, (req, res) => {
+router.put('/:id', authenticateToken, requireAdmin, (req, res) => {
   const { name, capacity, location, equipment, status, description } = req.body;
   const equipmentStr = typeof equipment === 'string' ? equipment : JSON.stringify(equipment || []);
 
@@ -90,7 +89,7 @@ router.put('/:id', requireAdmin, (req, res) => {
   res.json({ message: 'Cập nhật phòng thành công' });
 });
 
-router.delete('/:id', requireAdmin, (req, res) => {
+router.delete('/:id', authenticateToken, requireAdmin, (req, res) => {
   // Check for future bookings
   const futureBookings = db.prepare(`
     SELECT COUNT(*) as count FROM bookings 

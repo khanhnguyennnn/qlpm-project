@@ -231,11 +231,17 @@ try {
     { id: 8, name: 'Giảng đường B1', capacity: 90, location: 'Tòa B1 - Tầng 1 (Khu V - Cổng B8 Trần Đại Nghĩa)', equipment: JSON.stringify(['Máy chiếu', 'Bảng thông minh', 'Điều hòa', 'Loa', 'Micro']), status: 'active', description: 'Giảng đường bậc thang công nghệ cao tòa nhà B1 hình cánh cung biểu tượng' }
   ];
 
-  const updateRoomStmt = db.prepare(`
-    UPDATE rooms SET name = ?, capacity = ?, location = ?, equipment = ?, status = ?, description = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
-  `);
   for (const r of hustRooms) {
-    updateRoomStmt.run(r.name, r.capacity, r.location, r.equipment, r.status, r.description, r.id);
+    const existing = db.prepare('SELECT id FROM rooms WHERE id = ?').get(r.id);
+    if (existing) {
+      db.prepare(`
+        UPDATE rooms SET name = ?, capacity = ?, location = ?, equipment = ?, status = ?, description = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+      `).run(r.name, r.capacity, r.location, r.equipment, r.status, r.description, r.id);
+    } else {
+      db.prepare(`
+        INSERT INTO rooms (id, name, capacity, location, equipment, status, description) VALUES (?, ?, ?, ?, ?, ?, ?)
+      `).run(r.id, r.name, r.capacity, r.location, r.equipment, r.status, r.description);
+    }
   }
 
   const additionalHustRooms = [
@@ -308,34 +314,11 @@ try {
   console.error("Seed notifications error:", e);
 }
 
-// Seed data if empty
-const userCountRes = db.prepare('SELECT COUNT(*) as count FROM users').get();
-const userCount = userCountRes ? userCountRes.count : 0;
+// Seed bookings if empty
+const bookingCountRes = db.prepare('SELECT COUNT(*) as count FROM bookings').get();
+const bookingCount = bookingCountRes ? bookingCountRes.count : 0;
 
-if (userCount === 0) {
-  const hashPassword = (pw) => bcrypt.hashSync(pw, 10);
-
-  const insertUser = db.prepare(`
-    INSERT INTO users (username, student_id, password, full_name, email, role, provider)
-    VALUES (?, ?, ?, ?, ?, ?, 'local')
-  `);
-
-  insertUser.run('admin', 'ADMIN001', hashPassword('admin123'), 'Quản trị viên', 'admin@example.com', 'admin');
-  insertUser.run('user1', 'SV2024001', hashPassword('user123'), 'Nguyễn Văn A', 'usera@example.com', 'user');
-  insertUser.run('user2', 'SV2024002', hashPassword('user123'), 'Trần Thị B', 'userb@example.com', 'user');
-
-  const insertRoom = db.prepare(`
-    INSERT INTO rooms (name, capacity, location, equipment, status, description)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `);
-
-  insertRoom.run('Hội trường C1 - Đại Cồ Việt', 150, 'Tòa C1 - Tầng 2 (Mặt đường Đại Cồ Việt - Cổng Bắc)', JSON.stringify(['Máy chiếu', 'Bảng thông minh', 'Điều hòa', 'Loa', 'Micro']), 'active', 'Hội trường trung tâm C1 quy mô lớn');
-  insertRoom.run('Hội trường C2', 120, 'Tòa C2 - Tầng 1 (Trục đường Giải Phóng)', JSON.stringify(['Máy chiếu', 'Bảng thông minh', 'Điều hòa', 'Loa', 'Micro', 'Webcam']), 'active', 'Hội trường C2 trang bị âm thanh vòm kỹ thuật số');
-  insertRoom.run('Phòng C3-201', 60, 'Tòa C3 - Tầng 2', JSON.stringify(['Máy tính', 'Máy chiếu', 'Bảng thông minh', 'Điều hòa', 'Loa']), 'active', 'Phòng thực hành máy tính & lập trình đồ họa');
-  insertRoom.run('Phòng C5-102', 45, 'Tòa C5 - Tầng 1', JSON.stringify(['Bảng thông minh', 'Điều hòa', 'Webcam', 'Màn hình TV']), 'maintenance', 'Đang bảo trì hệ thống điều hòa');
-  insertRoom.run('Hội trường Thư viện Tạ Quang Bửu', 200, 'Thư viện Tạ Quang Bửu - Tầng 4', JSON.stringify(['Máy chiếu', 'Bảng thông minh', 'Điều hòa', 'Loa', 'Micro', 'Webcam', 'Màn hình TV']), 'active', 'Hội trường danh dự Thư viện Tạ Quang Bửu');
-  insertRoom.run('Phòng D3-201', 55, 'Tòa D3 - Tầng 2 (Khu D)', JSON.stringify(['Máy chiếu', 'Máy tính', 'Điều hòa', 'Webcam', 'Loa']), 'active', 'Phòng hội thảo chuyên đề trực tuyến');
-
+if (bookingCount === 0) {
   const insertBooking = db.prepare(`
     INSERT INTO bookings (room_id, user_id, start_time, end_time, purpose, status, admin_note, cancel_reason)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -352,7 +335,7 @@ if (userCount === 0) {
   insertBooking.run(2, 2, '2026-10-06T08:00:00', '2026-10-06T10:30:00', 'Lớp Triết học Mác - Lênin', 'approved', 'Đã duyệt', null);
 
   save();
-  console.log('Khởi tạo dữ liệu mẫu SQLite thành công!');
+  console.log('Khởi tạo dữ liệu bookings mẫu thành công!');
 }
 
 export function addAuditLog({ userId, userName, action, entityType, entityId, details }) {

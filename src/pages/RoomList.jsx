@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom';
 import { 
   MapPin, Users, Eye, CalendarPlus, Search, Filter, 
   Monitor, Sparkles, Check, Info, Tv, Map, X,
-  Building2, GraduationCap, Compass, Layers
+  Building2, GraduationCap, Compass, Layers, AlertTriangle, RefreshCw
 } from 'lucide-react';
 import api from '../utils/api';
 
 const RoomList = () => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -30,18 +31,25 @@ const RoomList = () => {
     'Màn hình TV'
   ];
 
-  useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        setLoading(true);
-        const { data } = await api.get('/rooms');
-        setRooms(data || []);
-      } catch (error) {
-        console.error('Lỗi khi tải danh sách phòng:', error);
-      } finally {
-        setLoading(false);
+  const fetchRooms = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const { data } = await api.get('/rooms');
+      setRooms(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Lỗi khi tải danh sách phòng:', err);
+      if (err.response) {
+        setError(err.response.data?.error || `Lỗi máy chủ HTTP ${err.response.status}. Vui lòng thử lại.`);
+      } else {
+        setError('Không thể kết nối đến máy chủ Backend (Port 3001). Vui lòng đảm bảo Backend đang chạy (dùng lệnh "npm run dev").');
       }
-    };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchRooms();
   }, []);
 
@@ -311,6 +319,29 @@ const RoomList = () => {
         </div>
       </div>
 
+      {/* Error alert banner */}
+      {error && (
+        <div className="p-6 rounded-3xl bg-rose-50/90 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-200 shadow-sm space-y-3">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" />
+            <div className="flex-1 space-y-1">
+              <h4 className="font-bold text-sm">Không thể tải danh sách phòng học</h4>
+              <p className="text-xs text-rose-700 dark:text-rose-300 font-sans leading-relaxed">{error}</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-1">
+                Gợi ý: Mở terminal dự án và chạy <code className="px-1.5 py-0.5 bg-rose-100 dark:bg-rose-900/60 rounded text-rose-700 dark:text-rose-300 font-bold">npm run dev</code> để khởi động đồng thời cả Backend (Port 3001) và Frontend (Port 5173).
+              </p>
+            </div>
+            <button
+              onClick={fetchRooms}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer btn-tactile shadow-xs"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Thử lại</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Grid Danh mục phòng */}
       {loading ? (
         <div className="p-16 text-center text-slate-500 glass-card rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
@@ -429,16 +460,30 @@ const RoomList = () => {
           {filteredRooms.length === 0 && (
             <div className="col-span-full p-16 text-center text-slate-500 glass-card rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
               <Info className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto" />
-              <p className="text-lg font-bold text-slate-800 dark:text-slate-200 font-serif">Không tìm thấy phòng học phù hợp</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-                Không có phòng nào thỏa mãn các bộ lọc hiện tại. Bạn có thể xóa bộ lọc để xem toàn bộ danh mục phòng học.
+              <p className="text-lg font-bold text-slate-800 dark:text-slate-200 font-serif">
+                {rooms.length === 0 ? 'Chưa có phòng học nào trong hệ thống' : 'Không tìm thấy phòng học phù hợp'}
               </p>
-              <button
-                onClick={clearAllFilters}
-                className="mt-3 inline-flex items-center justify-center px-4 py-2 bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-800 text-xs font-bold leading-none whitespace-nowrap rounded-xl hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-colors cursor-pointer btn-tactile"
-              >
-                <span>Xóa tất cả bộ lọc</span>
-              </button>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+                {rooms.length === 0 
+                  ? 'Cơ sở dữ liệu phòng học hiện đang rỗng hoặc chưa đồng bộ được với Backend.'
+                  : 'Không có phòng nào thỏa mãn các bộ lọc hiện tại. Bạn có thể xóa bộ lọc để xem toàn bộ danh mục phòng học.'}
+              </p>
+              {rooms.length > 0 ? (
+                <button
+                  onClick={clearAllFilters}
+                  className="mt-3 inline-flex items-center justify-center px-4 py-2 bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-800 text-xs font-bold leading-none whitespace-nowrap rounded-xl hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-colors cursor-pointer btn-tactile"
+                >
+                  <span>Xóa tất cả bộ lọc</span>
+                </button>
+              ) : (
+                <button
+                  onClick={fetchRooms}
+                  className="mt-3 inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-primary-600 text-white text-xs font-bold leading-none whitespace-nowrap rounded-xl hover:bg-primary-700 transition-colors cursor-pointer btn-tactile shadow-xs"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  <span>Tải lại dữ liệu</span>
+                </button>
+              )}
             </div>
           )}
         </div>

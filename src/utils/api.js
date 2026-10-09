@@ -21,7 +21,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 && !error.config?.url?.includes('/login')) {
+    const isAuthError = error.response?.status === 401 || 
+      (error.response?.status === 403 && typeof error.response?.data?.error === 'string' && error.response.data.error.toLowerCase().includes('token'));
+    if (isAuthError && !error.config?.url?.includes('/login')) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       if (window.location.pathname !== '/login') {
