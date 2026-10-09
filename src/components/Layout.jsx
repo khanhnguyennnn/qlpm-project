@@ -205,7 +205,7 @@ export default function Layout() {
         <div className="pointer-events-auto h-13 sm:h-14 px-2.5 sm:px-3.5 rounded-full bg-[var(--color-paper-0)]/85 dark:bg-[var(--color-paper-0)]/80 backdrop-blur-2xl backdrop-saturate-150 border border-[var(--rule-soft)] ring-1 ring-white/40 dark:ring-white/5 shadow-[0_8px_30px_-6px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-[0_12px_40px_-10px_rgba(0,0,0,0.6)] inline-flex items-center gap-1.5 sm:gap-2.5 max-w-[calc(100vw-1.5rem)] transition-all duration-300">
           
           {/* University & School Identity */}
-          <NavLink to="/" className="flex items-center gap-2 group shrink-0 pl-1 pr-1" title="Trang chủ QLPH SEEE - Đại Học Bách Khoa Hà Nội">
+          <NavLink to="/" className="flex items-center gap-2 group shrink-0 pl-1 pr-1" title="Trang chủ SEEE - Đại Học Bách Khoa Hà Nội">
             <div className="w-8 h-8 rounded-full bg-white shadow-2xs border border-[var(--rule-soft)] flex items-center justify-center overflow-hidden p-0.5 shrink-0 group-hover:scale-105 transition-transform duration-200">
               <img 
                 src="/logo.png" 
@@ -213,12 +213,9 @@ export default function Layout() {
                 className="h-full w-auto object-contain max-h-6.5" 
               />
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center">
               <span className="font-display font-bold text-sm sm:text-base tracking-tight text-[var(--color-ink-0)] leading-none">
                 SEEE
-              </span>
-              <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-[var(--color-accent)] px-1.5 py-0.5 rounded-full bg-[var(--color-accent-tint)] border border-[var(--rule-hair)]">
-                QLPH
               </span>
             </div>
           </NavLink>

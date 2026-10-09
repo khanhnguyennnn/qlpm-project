@@ -4,6 +4,8 @@
  * pre-emit critique: P5 H5 E5 S5 R5 V5 · slop: pass (58/58)
  */
 
+@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,12 +37,14 @@
   --color-ruby-metallic: oklch(50.0% 0.240 24);
   --color-rose-gold: oklch(72.0% 0.140 32);
 
-  /* Typography — Oswald for Headers, Source Serif 4 for Body */
-  --font-header: "Oswald", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Oswald", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-body: "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  --font-italic: "Source Serif 4", Georgia, serif;
+  /* Typography — Apple San Francisco (SF Pro) */
+  --font-sans: "SF Pro Text", "SF Pro Display", "SF Pro Icons", -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-header: "SF Pro Display", "SF Pro Text", "SF Pro Icons", -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: "SF Pro Display", "SF Pro Text", "SF Pro Icons", -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-body: "SF Pro Text", "SF Pro Display", "SF Pro Icons", -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-serif: "SF Pro Text", "SF Pro Display", "SF Pro Icons", -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", "SFMono-Regular", ui-monospace, "Geist Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --font-italic: "SF Pro Text", "SF Pro Display", "SF Pro Icons", -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   /* Type scale */
   --text-xs: 0.75rem;
@@ -167,7 +171,7 @@ body {
 }
 
 /* ───────── Typography Hierarchy & Font Roles ───────── */
-/* 1. Headers & Titles: Oswald (Compact, Architectural, Punchy) */
+/* 1. Headers & Titles: San Francisco / SF Pro Display */
 h1, h2, h3, h4, h5, h6,
 header,
 th,
@@ -175,10 +179,10 @@ th,
 .font-display,
 .heading-oswald {
   font-family: var(--font-header) !important;
-  letter-spacing: 0.015em;
+  letter-spacing: -0.015em;
 }
 
-/* Inner elements inside headers inherit Oswald unless specifically styled */
+/* Inner elements inside headers inherit San Francisco unless specifically styled */
 h1 *:not(.italic-accent):not(.font-mono):not(.font-mono-code),
 h2 *:not(.italic-accent):not(.font-mono):not(.font-mono-code),
 h3 *:not(.italic-accent):not(.font-mono):not(.font-mono-code),
@@ -190,14 +194,16 @@ h6 *:not(.italic-accent):not(.font-mono):not(.font-mono-code),
   font-family: inherit;
 }
 
-/* 2. Body Font: Source Serif 4 (Warm, Academic, Ultra-Readable) */
+/* 2. Body & General Font: San Francisco / SF Pro Text */
 p, li, dd, dt,
 input, select, textarea, button, td,
-.font-body {
-  font-family: var(--font-body);
+.font-body,
+.font-serif,
+.font-sans {
+  font-family: var(--font-body) !important;
 }
 
-/* 3. Monospace: Geist Mono with Tabular Numerals */
+/* 3. Monospace: SF Mono with Tabular Numerals */
 .font-mono,
 .font-mono-code,
 code,
@@ -219,7 +225,7 @@ table,
 .eyebrow {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-ink-2);
   display: inline-flex;

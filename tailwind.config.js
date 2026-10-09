@@ -8,12 +8,12 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        header: ['"Oswald"', 'sans-serif'],
-        display: ['"Oswald"', 'sans-serif'],
-        sans: ['"Source Serif 4"', 'Georgia', 'serif'],
-        serif: ['"Source Serif 4"', 'Georgia', 'serif'],
-        body: ['"Source Serif 4"', 'Georgia', 'serif'],
-        mono: ['"Geist Mono"', 'ui-monospace', 'monospace'],
+        header: ['"SF Pro Display"', '"SF Pro Text"', '"SF Pro"', '-apple-system', 'BlinkMacSystemFont', '"San Francisco"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        display: ['"SF Pro Display"', '"SF Pro Text"', '"SF Pro"', '-apple-system', 'BlinkMacSystemFont', '"San Francisco"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: ['"SF Pro Text"', '"SF Pro Display"', '"SF Pro"', '-apple-system', 'BlinkMacSystemFont', '"San Francisco"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        serif: ['"SF Pro Text"', '"SF Pro Display"', '"SF Pro"', '-apple-system', 'BlinkMacSystemFont', '"San Francisco"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        body: ['"SF Pro Text"', '"SF Pro Display"', '"SF Pro"', '-apple-system', 'BlinkMacSystemFont', '"San Francisco"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        mono: ['"SF Mono"', '"SFMono-Regular"', 'ui-monospace', '"Geist Mono"', 'Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', 'monospace'],
       },
       colors: {
         primary: {
