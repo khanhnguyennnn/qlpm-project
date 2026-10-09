@@ -4,6 +4,32 @@ import {
   Clock, History, Search, CheckCheck, Loader2, FileText, UserCheck 
 } from 'lucide-react';
 import api from '../utils/api';
+import { formatDateTime, formatDate, STATUS_MAP } from '../utils/helpers';
+
+// Helper formatters that never throw ReferenceError or Invalid Date crashes
+const safeFormatDateTime = (dateStr) => {
+  if (!dateStr) return '';
+  try {
+    const formatted = formatDateTime(dateStr);
+    if (formatted) return formatted;
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? String(dateStr) : d.toLocaleString('vi-VN');
+  } catch {
+    return String(dateStr);
+  }
+};
+
+const safeFormatDate = (dateStr) => {
+  if (!dateStr) return '';
+  try {
+    const formatted = formatDate(dateStr);
+    if (formatted) return formatted;
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? String(dateStr) : d.toLocaleDateString('vi-VN');
+  } catch {
+    return String(dateStr);
+  }
+};
 
 const PendingApprovals = () => {
   const [activeTab, setActiveTab] = useState('pending'); // 'pending' | 'checkin' | 'audit'
@@ -26,15 +52,16 @@ const PendingApprovals = () => {
       setLoading(true);
       // Fetch pending bookings
       const pendingRes = await api.get('/api/bookings?status=pending');
-      const pending = pendingRes.data || [];
+      const pending = Array.isArray(pendingRes.data) ? pendingRes.data : [];
       setPendingBookings(pending);
 
       // Fetch all approved bookings for conflict check and reception check-in
       const approvedRes = await api.get('/api/bookings?status=approved');
-      setApprovedBookings(approvedRes.data || []);
+      const approved = Array.isArray(approvedRes.data) ? approvedRes.data : [];
+      setApprovedBookings(approved);
     } catch (error) {
       console.error('Error fetching bookings:', error);
-      setMessage({ type: 'error', text: 'Lỗi khi tải dữ liệu' });
+      setMessage({ type: 'error', text: 'Lỗi khi tải dữ liệu yêu cầu' });
     } finally {
       setLoading(false);
     }
@@ -63,13 +90,19 @@ const PendingApprovals = () => {
   }, [activeTab]);
 
   const checkConflict = (booking) => {
-    return approvedBookings.some(approved => {
-      if (approved.room_id !== booking.room_id) return false;
-      const start1 = new Date(booking.start_time).getTime();
-      const end1 = new Date(booking.end_time).getTime();
-      const start2 = new Date(approved.start_time).getTime();
-      const end2 = new Date(approved.end_time).getTime();
-      return start1 < end2 && start2 < end1;
+    if (!booking || !booking.start_time || !booking.end_time) return false;
+    return (approvedBookings || []).some(approved => {
+      if (!approved || approved.room_id !== booking.room_id) return false;
+      try {
+        const start1 = new Date(booking.start_time).getTime();
+        const end1 = new Date(booking.end_time).getTime();
+        const start2 = new Date(approved.start_time).getTime();
+        const end2 = new Date(approved.end_time).getTime();
+        if (isNaN(start1) || isNaN(end1) || isNaN(start2) || isNaN(end2)) return false;
+        return start1 < end2 && start2 < end1;
+      } catch {
+        return false;
+      }
     });
   };
 
@@ -267,8 +300,8 @@ const PendingApprovals = () => {
                             </td>
                             <td className="py-4 px-4 font-bold text-primary-600 dark:text-primary-400 font-serif">{booking.room_name}</td>
                             <td className="py-4 px-4 text-xs font-semibold text-slate-600 dark:text-slate-300 font-mono">
-                              <div>{formatDate(booking.start_time)}</div>
-                              <div className="text-slate-400 font-normal">đến {formatDate(booking.end_time)}</div>
+                              <div>{safeFormatDateTime(booking.start_time)}</div>
+                              <div className="text-slate-400 font-normal">đến {safeFormatDateTime(booking.end_time)}</div>
                             </td>
                             <td className="py-4 px-4 text-xs text-slate-600 dark:text-slate-300 max-w-xs font-sans">
                               <div>{booking.purpose}</div>
@@ -284,7 +317,7 @@ const PendingApprovals = () => {
                                 </a>
                               )}
                             </td>
-                            <td className="py-4 px-4 text-xs text-slate-400 dark:text-slate-500 font-mono">{new Date(booking.created_at).toLocaleDateString('vi-VN')}</td>
+                            <td className="py-4 px-4 text-xs text-slate-400 dark:text-slate-500 font-mono">{safeFormatDate(booking.created_at)}</td>
                             <td className="py-4 px-4 text-right">
                               <div className="flex items-center justify-end space-x-2">
                                 <button
@@ -383,14 +416,14 @@ const PendingApprovals = () => {
                           {b.student_id && <div className="text-[11px] font-mono text-slate-400">{b.student_id}</div>}
                         </td>
                         <td className="py-4 px-4 text-xs font-mono text-slate-600 dark:text-slate-300">
-                          <div>{formatDate(b.start_time)}</div>
-                          <div className="text-slate-400">đến {formatDate(b.end_time)}</div>
+                          <div>{safeFormatDateTime(b.start_time)}</div>
+                          <div className="text-slate-400">đến {safeFormatDateTime(b.end_time)}</div>
                         </td>
                         <td className="py-4 px-4 text-xs font-sans">
                           {b.checked_in_at ? (
                             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-bold">
                               <CheckCheck className="w-3.5 h-3.5 text-emerald-600" />
-                              <span>Đã nhận phòng ({formatDate(b.checked_in_at)})</span>
+                              <span>Đã nhận phòng ({safeFormatDateTime(b.checked_in_at)})</span>
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-mono text-[11px]">
@@ -464,7 +497,7 @@ const PendingApprovals = () => {
                     auditLogs.map((log) => (
                       <tr key={log.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
                         <td className="py-3.5 px-5 text-xs font-mono text-slate-500 dark:text-slate-400 whitespace-nowrap">
-                          {new Date(log.created_at).toLocaleString('vi-VN')}
+                          {safeFormatDateTime(log.created_at)}
                         </td>
                         <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white font-serif text-xs">
                           {log.user_name || 'Hệ thống'}

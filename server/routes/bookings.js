@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
   const { status, room_id, user_id, my, from, to, date } = req.query;
   
   let query = `
-    SELECT b.*, r.name as room_name, u.full_name as user_name 
+    SELECT b.*, r.name as room_name, u.full_name as user_name, u.student_id as student_id, u.email as user_email, u.phone as user_phone 
     FROM bookings b
     JOIN rooms r ON b.room_id = r.id
     JOIN users u ON b.user_id = u.id
